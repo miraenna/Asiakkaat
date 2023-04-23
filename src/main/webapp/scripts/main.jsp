@@ -1,5 +1,5 @@
 function haeAsiakkaat() {
-	let url = "asiakkaat"; 
+	let url = "asiakkaat?hakusana=" + document.getElementById("hakusana").value"; 
 	let requestOptions = {
         method: "GET",
         headers: { "Content-Type": "application/x-www-form-urlencoded" }       
@@ -14,14 +14,14 @@ function haeAsiakkaat() {
 function printItems(respObjList){
 	//console.log(respObjList);
 	let htmlStr="";
-	for(let item of respObjList){		
-    	htmlStr+="<tr asiakas_id='rivi_"+item.asiakas_id+"'>";
+	for(let item of respObjList) {		
+    	htmlStr+="<tr id='rivi_"+item.id+"'>";
+    	htmlStr+="<td>"+item.asiakas_id+"</td>";
     	htmlStr+="<td>"+item.etunimi+"</td>";
     	htmlStr+="<td>"+item.sukunimi+"</td>";
     	htmlStr+="<td>"+item.puhelin+"</td>";
     	htmlStr+="<td>"+item.sposti+"</td>";     	
     	htmlStr+="</tr>";    	
-    	
 	}	
 		document.getElementById("tbody").innerHTML = htmlStr;
 }

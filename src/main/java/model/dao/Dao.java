@@ -13,13 +13,13 @@ public class Dao {
 	private Connection con = null;
 	private ResultSet rs = null;
 	private PreparedStatement stmtPrep = null;
-	private String sql;
+	private String sql = "";
 	private String db = "Myynti.sqlite";
 
 	private Connection yhdista() {
 		Connection con = null;
 		String path = System.getProperty("catalina.base");
-		path = path.substring(0, path.indexOf(".metadata")).replace("\\", "/");
+		path = path.substring(0, path.indexOf(".metadata")).replace("\\", "/"); 
 		String url = "jdbc:sqlite:" + path + db;
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -69,12 +69,12 @@ public class Dao {
 				if (rs != null) {
 					while (rs.next()) {
 						Asiakas asiakas = new Asiakas();
-						asiakas.setAsiakas_id(rs.getInt(1));
+						asiakas.setId(rs.getInt(1));
 						asiakas.setEtunimi(rs.getString(2));
 						asiakas.setSukunimi(rs.getString(3));
 						asiakas.setPuhelin(rs.getString(4));
 						asiakas.setSposti(rs.getString(5));
-						asiakkaat.add(asiakas);
+						asiakkaat.add(asiakas);						
 					}
 				}
 			}
@@ -101,12 +101,12 @@ public class Dao {
 				if (rs != null) {
 					while (rs.next()) {
 						Asiakas asiakas = new Asiakas();
-						asiakas.setAsiakas_id(rs.getInt(1));
+						asiakas.setId(rs.getInt(1));
 						asiakas.setEtunimi(rs.getString(2));
 						asiakas.setSukunimi(rs.getString(3));
 						asiakas.setPuhelin(rs.getString(4));
 						asiakas.setSposti(rs.getString(5));
-						asiakkaat.add(asiakas);
+						asiakkaat.add(asiakas);		
 					}
 				}
 			}

@@ -1,52 +1,64 @@
 package model;
 
 public class Asiakas {
-	private int asiakas_id;
+	private int id;
 	private String etunimi, sukunimi, puhelin, sposti;
-	public Asiakas() {
-		
+	
+	public Asiakas() {		
 	}
-	public Asiakas(int asiakas_id, String etunimi, String sukunimi, String puhelin, String sposti) {
-		this.asiakas_id = asiakas_id;
+
+	public Asiakas(int id, String etunimi, String sukunimi, String puhelin, String sposti) {
+		super();
+		this.id = id;
 		this.etunimi = etunimi;
 		this.sukunimi = sukunimi;
 		this.puhelin = puhelin;
 		this.sposti = sposti;
 	}
+
 	public int getId() {
-		return asiakas_id;
+		return id;
 	}
-	public void setAsiakas_id(int asiakas_id) {
-		this.asiakas_id = asiakas_id;
+
+	public void setId(int id) {
+		this.id = id;
 	}
+
 	public String getEtunimi() {
 		return etunimi;
 	}
+
 	public void setEtunimi(String etunimi) {
 		this.etunimi = etunimi;
 	}
+
 	public String getSukunimi() {
 		return sukunimi;
 	}
+
 	public void setSukunimi(String sukunimi) {
 		this.sukunimi = sukunimi;
 	}
+
 	public String getPuhelin() {
 		return puhelin;
 	}
+
 	public void setPuhelin(String puhelin) {
 		this.puhelin = puhelin;
 	}
+
 	public String getSposti() {
 		return sposti;
 	}
+
 	public void setSposti(String sposti) {
 		this.sposti = sposti;
 	}
+
 	@Override
 	public String toString() {
-		return "Asiakas [asiakas_id=" + asiakas_id + ", etunimi=" + etunimi + ", sukunimi=" + sukunimi + ", puhelin=" + puhelin
+		return "Asiakas [id=" + id + ", etunimi=" + etunimi + ", sukunimi=" + sukunimi + ", puhelin=" + puhelin
 				+ ", sposti=" + sposti + "]";
 	}
-	
 }

@@ -124,10 +124,10 @@ public class Dao {
 		try {
 			con = yhdista();
 			stmtPrep = con.prepareStatement(sql);
-			stmtPrep.setString(2, asiakas.getEtunimi());
-			stmtPrep.setString(3, asiakas.getSukunimi());
-			stmtPrep.setString(4, asiakas.getPuhelin());
-			stmtPrep.setString(5, asiakas.getSposti());
+			stmtPrep.setString(1, asiakas.getEtunimi());
+			stmtPrep.setString(2, asiakas.getSukunimi());
+			stmtPrep.setString(3, asiakas.getPuhelin());
+			stmtPrep.setString(4, asiakas.getSposti());
 			stmtPrep.executeUpdate();		
 		} catch (Exception e) {
 			paluuArvo=false;
@@ -139,7 +139,7 @@ public class Dao {
 	}
 	public boolean removeItem(int id) {
 		boolean paluuArvo = true;
-		sql = "DELETE FROM asiakkaat WHERE id=?";
+		sql = "DELETE FROM asiakkaat WHERE asiakas_id=?";
 		try {
 			con = yhdista();
 			stmtPrep = con.prepareStatement(sql);

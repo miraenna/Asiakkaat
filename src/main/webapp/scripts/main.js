@@ -20,11 +20,12 @@ function haeAsiakkaat(){
 function printItems(respObjList){
 	let htmlStr="";
 	for(let item of respObjList){	
-    	htmlStr+="<tr id='rivi_"+item.asiakas_id+"'>";
+    	htmlStr+="<tr id='rivi_"+item.id+"'>";
     	htmlStr+="<td>"+item.etunimi+"</td>";
     	htmlStr+="<td>"+item.sukunimi+"</td>";
     	htmlStr+="<td>"+item.puhelin+"</td>";
-    	htmlStr+="<td>"+item.sposti+"</td>";     	
+    	htmlStr+="<td>"+item.sposti+"</td>";
+    	htmlStr+="<td><span class='poista' onclick=varmistaPoisto("+item.id+",'"+encodeURI(item.etunimi)+"')>Poista</span></td>";     	
     	htmlStr+="</tr>";    	
 	}	
 	document.getElementById("tbody").innerHTML = htmlStr;	
@@ -44,10 +45,10 @@ function tutkiTiedot(){
 	}else if(document.getElementById("sukunimi").value.length<2){
 		ilmo="Sukunimi ei kelpaa!";
 		document.getElementById("sukunimi").focus();			
-	}else if(document.getElementById("puhelin").value.length<1){
+	}else if(document.getElementById("puhelin").value.length<7){
 		ilmo="Puhelinnumero ei kelpaa!";	
 		document.getElementById("puhelin").focus();	
-	}else if(document.getElementById("sposti").value.length<1){
+	}else if(document.getElementById("sposti").value.length<5){
 		ilmo="Sähköpostiosoite ei kelpaa!";	
 		document.getElementById("sposti").focus();	
 	}
@@ -93,12 +94,12 @@ function lisaaTiedot(){
    	.catch(errorText => console.error("Fetch failed: " + errorText));
 }
 
-function varmistaPoisto(id, sposti){
+function varmistaPoisto(id, etunimi){
 	if(confirm("Poista asiakas " + decodeURI(id) +"?")){ //decodeURI() muutetaan enkoodatut merkit takaisin normaaliksi kirjoitukseksi
-		poistaAsiakas(id, encodeURI(sposti));
+		poistaAsiakas(id, encodeURI(etunimi));
 	}
 }
-function poistaAsiakas(id){
+function poistaAsiakas(id, etunimi){
 	let url = "asiakkaat?id=" + id;    
     let requestOptions = {
         method: "DELETE"             
@@ -111,7 +112,7 @@ function poistaAsiakas(id){
 			alert("Asiakkaan poisto epäonnistui.");	        	
         }else if(responseObj.response==1){ 
 			document.getElementById("rivi_"+id).style.backgroundColor="red";
-			alert("Asiakkaan " + decodeURI(id) +" poisto onnistui."); //decodeURI() muutetaan enkoodatut merkit takaisin normaaliksi kirjoitukseksi
+			alert("Asiakkaan " + decodeURI(etunimi) +" poisto onnistui."); //decodeURI() muutetaan enkoodatut merkit takaisin normaaliksi kirjoitukseksi
 			haeAsiakkaat();        	
 		}
 })

@@ -8,7 +8,6 @@ public class Asiakas {
 	}
 
 	public Asiakas(int id, String etunimi, String sukunimi, String puhelin, String sposti) {
-		super();
 		this.id = id;
 		this.etunimi = etunimi;
 		this.sukunimi = sukunimi;

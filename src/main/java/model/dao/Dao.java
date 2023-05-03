@@ -69,7 +69,7 @@ public class Dao {
 				if (rs != null) {
 					while (rs.next()) {
 						Asiakas asiakas = new Asiakas();
-						asiakas.setId(rs.getInt(1));
+						asiakas.setAsiakas_id(rs.getInt(1));
 						asiakas.setEtunimi(rs.getString(2));
 						asiakas.setSukunimi(rs.getString(3));
 						asiakas.setPuhelin(rs.getString(4));
@@ -101,7 +101,7 @@ public class Dao {
 				if (rs != null) {
 					while (rs.next()) {
 						Asiakas asiakas = new Asiakas();
-						asiakas.setId(rs.getInt(1));
+						asiakas.setAsiakas_id(0);
 						asiakas.setEtunimi(rs.getString(2));
 						asiakas.setSukunimi(rs.getString(3));
 						asiakas.setPuhelin(rs.getString(4));
@@ -129,21 +129,21 @@ public class Dao {
 			stmtPrep.setString(3, asiakas.getPuhelin());
 			stmtPrep.setString(4, asiakas.getSposti());
 			stmtPrep.executeUpdate();		
-		} catch (Exception e) {
-			paluuArvo=false;
+		} catch (SQLException e) {
 			e.printStackTrace();
+			paluuArvo=false;
 		} finally {
 			sulje();
 		}
 		return paluuArvo;
 	}
-	public boolean removeItem(int id) {
+	public boolean removeItem(int asiakas_id) {
 		boolean paluuArvo = true;
 		sql = "DELETE FROM asiakkaat WHERE asiakas_id=?";
 		try {
 			con = yhdista();
 			stmtPrep = con.prepareStatement(sql);
-			stmtPrep.setInt(1, id);
+			stmtPrep.setInt(1, asiakas_id);
 			stmtPrep.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();

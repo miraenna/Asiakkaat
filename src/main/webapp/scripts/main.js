@@ -12,20 +12,21 @@ function haeAsiakkaat(){
         headers: { "Content-Type": "application/x-www-form-urlencoded" }       
     };    
     fetch(url, requestOptions)
-    .then(response => response.json())//Muutetaan vastausteksti JSON-objektiksi 
+    .then(response => response.json())
    	.then(response => printItems(response)) 
    	.catch(errorText => console.error("Fetch failed: " + errorText));
 }
 
 function printItems(respObjList){
+	console.log(respObjList);
 	let htmlStr="";
 	for(let item of respObjList){	
-    	htmlStr+="<tr id='rivi_"+item.id+"'>";
+    	htmlStr+="<tr id='rivi_"+item.asiakas_id+"'>";
     	htmlStr+="<td>"+item.etunimi+"</td>";
     	htmlStr+="<td>"+item.sukunimi+"</td>";
     	htmlStr+="<td>"+item.puhelin+"</td>";
-    	htmlStr+="<td>"+item.sposti+"</td>";
-    	htmlStr+="<td><span class='poista' onclick=varmistaPoisto("+item.id+",'"+encodeURI(item.etunimi)+"')>Poista</span></td>";     	
+    	htmlStr+="<td>"+item.sposti+"</td>";    
+		htmlStr+="<td><span class='poista' onclick=varmistaPoisto("+item.asiakas_id+",'"+encodeURI(item.etunimi + " " + item.sukunimi)+"')>Poista</span></td>"; //encodeURI() muutetaan erikoismerkit, välilyönnit jne. UTF-8 merkeiksi.	
     	htmlStr+="</tr>";    	
 	}	
 	document.getElementById("tbody").innerHTML = htmlStr;	
@@ -39,19 +40,19 @@ function tutkiJaLisaa(){
 
 function tutkiTiedot(){
 	let ilmo="";	
-	if(document.getElementById("etunimi").value.length<3){
-		ilmo="Etunimi ei kelpaa!";	
+	if(document.getElementById("etunimi").value.length<2){
+		ilmo="Etunimi ei kelpaa!";
 		document.getElementById("etunimi").focus();	
 	}else if(document.getElementById("sukunimi").value.length<2){
 		ilmo="Sukunimi ei kelpaa!";
 		document.getElementById("sukunimi").focus();			
 	}else if(document.getElementById("puhelin").value.length<7){
-		ilmo="Puhelinnumero ei kelpaa!";	
+		ilmo="Puhelin ei kelpaa!";	
 		document.getElementById("puhelin").focus();	
-	}else if(document.getElementById("sposti").value.length<5){
-		ilmo="Sähköpostiosoite ei kelpaa!";	
+	}else if(document.getElementById("sposti").value.length<8||document.getElementById("sposti").value.indexOf(".")==-1||document.getElementById("sposti").value.indexOf("@")==-1){
+		ilmo="Sposti ei kelpaa!";	
 		document.getElementById("sposti").focus();	
-	}
+	}	
 	if(ilmo!=""){
 		document.getElementById("ilmo").innerHTML=ilmo;
 		setTimeout(function(){ document.getElementById("ilmo").innerHTML=""; }, 3000);
@@ -68,53 +69,57 @@ function tutkiTiedot(){
 function siivoa(teksti){
 	teksti=teksti.replace(/</g, "");//&lt;
 	teksti=teksti.replace(/>/g, "");//&gt;	
+	teksti=teksti.replace(/;/g, "");//&#59;	
 	teksti=teksti.replace(/'/g, "''");//&apos;	
 	return teksti;
 }
 
 function lisaaTiedot(){
 	let formData = serialize_form(document.lomake);
+	//formData=encodeURI(formData);
+	console.log(formData);
 	let url = "asiakkaat";    
     let requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },  
+        method: "POST", //Lisätään asiakas
+        headers: { "Content-Type": "application/json; charset=UTF-8" },
     	body: formData
     };    
     fetch(url, requestOptions)
     .then(response => response.json())
    	.then(responseObj => {	
+   		//console.log(responseObj);
    		if(responseObj.response==0){
    			document.getElementById("ilmo").innerHTML = "Asiakkaan lisäys epäonnistui.";	
         }else if(responseObj.response==1){ 
         	document.getElementById("ilmo").innerHTML = "Asiakkaan lisäys onnistui.";
-			document.lomake.reset(); //Lomakkeen tyhjennys	        	
+			document.lomake.reset(); //Tyhjennetään lisäämisen lomake		        	
 		}
 		setTimeout(function(){ document.getElementById("ilmo").innerHTML=""; }, 3000);
    	})
    	.catch(errorText => console.error("Fetch failed: " + errorText));
 }
 
-function varmistaPoisto(id, etunimi){
-	if(confirm("Poista asiakas " + decodeURI(id) +"?")){ //decodeURI() muutetaan enkoodatut merkit takaisin normaaliksi kirjoitukseksi
-		poistaAsiakas(id, encodeURI(etunimi));
+function varmistaPoisto(asiakas_id, nimi){
+	if(confirm("Poista asiakas " + decodeURI(nimi) +"?")){
+		poistaAsiakas(asiakas_id, nimi);
 	}
 }
-function poistaAsiakas(id, etunimi){
-	let url = "asiakkaat?id=" + id;    
+
+function poistaAsiakas(asiakas_id, nimi){
+	let url = "asiakkaat?asiakas_id=" + asiakas_id;    
     let requestOptions = {
         method: "DELETE"             
     };    
     fetch(url, requestOptions)
-    .then(response => response.json())//Muutetaan vastausteksti JSON-objektiksi
+    .then(response => response.json())
    	.then(responseObj => {	
-   		//console.log(responseObj);
    		if(responseObj.response==0){
 			alert("Asiakkaan poisto epäonnistui.");	        	
         }else if(responseObj.response==1){ 
-			document.getElementById("rivi_"+id).style.backgroundColor="red";
-			alert("Asiakkaan " + decodeURI(etunimi) +" poisto onnistui."); //decodeURI() muutetaan enkoodatut merkit takaisin normaaliksi kirjoitukseksi
+			document.getElementById("rivi_"+asiakas_id).style.backgroundColor="red";
+			alert("Asiakkaan " + decodeURI(nimi) +" poisto onnistui.");
 			haeAsiakkaat();        	
 		}
-})
+   	})
    	.catch(errorText => console.error("Fetch failed: " + errorText));
 }	

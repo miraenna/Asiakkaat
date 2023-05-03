@@ -70,11 +70,11 @@ public class Asiakkaat extends HttpServlet {
 	
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	System.out.println("Asiakkaat.doDelete()");
-	int id = Integer.parseInt(request.getParameter("id"));
+	int asiakas_id = Integer.parseInt(request.getParameter("asiakas_id"));
 	Dao dao = new Dao();
 	response.setContentType("application/json; charset=UTF-8");
 	PrintWriter out = response.getWriter();
-	if(dao.removeItem(id)) {
+	if(dao.removeItem(asiakas_id)) {
 		out.println("{\"response\":1}");
 	}else {
 		out.println("{\"response\":0}");

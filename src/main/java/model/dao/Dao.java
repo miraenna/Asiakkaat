@@ -101,7 +101,7 @@ public class Dao {
 				if (rs != null) {
 					while (rs.next()) {
 						Asiakas asiakas = new Asiakas();
-						asiakas.setAsiakas_id(0);
+						asiakas.setAsiakas_id(1);
 						asiakas.setEtunimi(rs.getString(2));
 						asiakas.setSukunimi(rs.getString(3));
 						asiakas.setPuhelin(rs.getString(4));
@@ -151,6 +151,53 @@ public class Dao {
 		} finally {
 			sulje();
 		}
+		return paluuArvo;
+	}
+	
+	public Asiakas getItem(int asiakas_id) {
+		Asiakas asiakas = null;
+		sql = "SELECT * FROM asiakkaat WHERE asiakas_id=?";       
+		try {
+			con=yhdista();
+			if(con!=null){ 
+				stmtPrep = con.prepareStatement(sql); 
+				stmtPrep.setInt(1, asiakas_id);
+        		rs = stmtPrep.executeQuery();  
+        		if(rs.isBeforeFirst()){ //jos kysely tuotti dataa
+        			rs.next();
+        			asiakas = new Asiakas();        			
+        			asiakas.setAsiakas_id(rs.getInt(1));
+					asiakas.setEtunimi(rs.getString(2));
+					asiakas.setSukunimi(rs.getString(3));
+					asiakas.setSposti(rs.getString(4));
+					asiakas.setPuhelin(rs.getString(5));      			      			
+				}        		
+			}			 
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			sulje();
+		}		
+		return asiakas;	
+}
+	public boolean changeItem(Asiakas asiakas){
+		boolean paluuArvo=true;
+		sql="UPDATE asiakkaat SET etunimi=?, sukunimi=?, sposti=?, puhelin=? WHERE asiakas_id=?";						  
+		try {
+			con = yhdista();
+			stmtPrep=con.prepareStatement(sql); 
+			stmtPrep.setString(1, asiakas.getEtunimi());
+			stmtPrep.setString(2, asiakas.getSukunimi());
+			stmtPrep.setString(3, asiakas.getSposti());
+			stmtPrep.setString(4, asiakas.getPuhelin());
+			stmtPrep.setInt(5, asiakas.getAsiakas_id());
+			stmtPrep.executeUpdate();	        
+		} catch (Exception e) {				
+			e.printStackTrace();
+			paluuArvo=false;
+		} finally {
+			sulje();
+		}				
 		return paluuArvo;
 	}
 }

@@ -5,7 +5,7 @@
 <meta charset="ISO-8859-1">
 <script src="scripts/main.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
-<title>Asiakkaan lisäys</title>
+<title>Asiakkaan muokkaus</title>
 </head>
 <body onload="asetaFocus('etunimi')" onkeydown="tutkiKey(event, 'paivita')">
 <form name="lomake" class="table table-dark table-bordered">
@@ -24,18 +24,19 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td><input type="text" name="etunimi" id="etunimi" placeholder="Matti" /></td>
-				<td><input type="text" name="sukunimi" id="sukunimi" placeholder="Meikäläinen"/></td>
-				<td><input type="text" name="sposti" id="sposti" placeholder="matti.meikalainen@hotmail.com"/></td>
-				<td><input type="text" name="puhelin" id="puhelin" placeholder="0454561234"/></td> 
-				<td><input type="button" value="Lisää" onclick="tutkiJaLisaa()" /></td>
+				<td><input type="text" name="etunimi" id="etunimi"/></td>
+				<td><input type="text" name="sukunimi" id="sukunimi"/></td>
+				<td><input type="text" name="sposti" id="sposti"/></td>
+				<td><input type="text" name="puhelin" id="puhelin"/></td> 
+				<td><input type="button" id="tallenna" value="Hyväksy" onclick="tutkiJaPaivita()" /></td>
 			</tr>
 		</tbody>
 	</table>
+	<input type="hidden" name="asiakas_id" id="asiakas_id">
 </form>
-<p id="ilmo"></p>
+<span id="ilmo"></span>
 </body>
 <script>
-haeAsiakkaat();
+haeAsiakas();
 </script>
 </html>

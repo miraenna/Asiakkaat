@@ -5,6 +5,17 @@ function serialize_form(form){
 	        );	
 } 
 
+function requestURLParam(sParam){
+    let sPageURL = window.location.search.substring(1);
+    let sURLVariables = sPageURL.split("&");
+    for (let i = 0; i < sURLVariables.length; i++){
+        let sParameterName = sURLVariables[i].split("=");
+        if(sParameterName[0] == sParam){
+            return sParameterName[1];
+        }
+    }
+}
+
 function haeAsiakkaat(){
 	let url = "asiakkaat?hakusana=" + document.getElementById("hakusana").value; 
 	let requestOptions = {
@@ -18,15 +29,16 @@ function haeAsiakkaat(){
 }
 
 function printItems(respObjList){
-	console.log(respObjList);
+	//console.log(respObjList);
 	let htmlStr="";
 	for(let item of respObjList){	
     	htmlStr+="<tr id='rivi_"+item.asiakas_id+"'>";
     	htmlStr+="<td>"+item.etunimi+"</td>";
     	htmlStr+="<td>"+item.sukunimi+"</td>";
     	htmlStr+="<td>"+item.puhelin+"</td>";
-    	htmlStr+="<td>"+item.sposti+"</td>";    
-		htmlStr+="<td><span class='poista' onclick=varmistaPoisto("+item.asiakas_id+",'"+encodeURI(item.etunimi + " " + item.sukunimi)+"')>Poista</span></td>"; //encodeURI() muutetaan erikoismerkit, välilyönnit jne. UTF-8 merkeiksi.	
+    	htmlStr+="<td>"+item.sposti+"</td>";
+		htmlStr+="<td><a href='muutaasiakas.jsp?asiakas_id="+item.asiakas_id+"'>Muuta</a>&nbsp;";
+    	htmlStr+="<span class='poista' onclick=varmistaPoisto("+item.asiakas_id+",'"+encodeURI(item.etunimi + " " + item.sukunimi)+"')>Poista</span></td>";
     	htmlStr+="</tr>";    	
 	}	
 	document.getElementById("tbody").innerHTML = htmlStr;	
@@ -35,6 +47,12 @@ function printItems(respObjList){
 function tutkiJaLisaa(){
 	if(tutkiTiedot()){
 		lisaaTiedot();
+	}
+}
+
+function tutkiJaPaivita(){
+	if(tutkiTiedot()){
+		paivitaTiedot();
 	}
 }
 
@@ -77,7 +95,7 @@ function siivoa(teksti){
 function lisaaTiedot(){
 	let formData = serialize_form(document.lomake);
 	//formData=encodeURI(formData);
-	console.log(formData);
+	//console.log(formData);
 	let url = "asiakkaat";    
     let requestOptions = {
         method: "POST", //Lisätään asiakas
@@ -123,3 +141,66 @@ function poistaAsiakas(asiakas_id, nimi){
    	})
    	.catch(errorText => console.error("Fetch failed: " + errorText));
 }	
+
+function haeAsiakas() {		
+    let url = "asiakkaat?asiakas_id=" + requestURLParam("asiakas_id"); //requestURLParam() on funktio, jolla voidaan hakea urlista arvo avaimen perusteella. Löytyy main.js -tiedostosta 	
+	//console.log(url);
+    let requestOptions = {
+        method: "GET",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" }       
+    };    
+    fetch(url, requestOptions)
+    .then(response => response.json())//Muutetaan vastausteksti JSON-objektiksi
+   	.then(response => {
+   		//console.log(response);
+   		document.getElementById("asiakas_id").value=response.asiakas_id;
+   		document.getElementById("etunimi").value=response.etunimi;
+   		document.getElementById("sukunimi").value=response.sukunimi;
+   		document.getElementById("sposti").value=response.sposti;
+   		document.getElementById("puhelin").value=response.puhelin;
+   	}) 
+   	.catch(errorText => console.error("Fetch failed: " + errorText));
+}	
+
+function paivitaTiedot(){	
+	let formData = serialize_form(lomake); //Haetaan tiedot lomakkeelta ja muutetaan JSON-stringiksi
+	//console.log(formData);	
+	let url = "asiakkaat";    
+    let requestOptions = {
+        method: "PUT",
+        headers: { "Content-Type": "application/json; charset=UTF-8" },  
+    	body: formData
+    };    
+    fetch(url, requestOptions)
+    .then(response => response.json())//Muutetaan vastausteksti JSON-objektiksi
+   	.then(responseObj => {	
+   		//console.log(responseObj);
+   		if(responseObj.response==0){
+   			document.getElementById("ilmo").innerHTML = "Asiakkaan muutos epäonnistui.";	
+        }else if(responseObj.response==1){ 
+        	document.getElementById("ilmo").innerHTML = "Asiakkaan muutos onnistui.";
+			document.lomake.reset();	        	
+		}
+   	})
+   	.catch(errorText => console.error("Fetch failed: " + errorText));
+}
+
+
+function asetaFocus(target){
+	document.getElementById(target).focus();	
+}
+
+//Funktio Enter-nappiin. Kutsu bodyn onkeydown()-metodista.
+function tutkiKey(event, target){	
+	if(event.keyCode==13){//13=Enter
+		if(target=="listaa"){
+			haeAsiakkaat();
+		}else if(target=="lisaa"){
+			tutkiJaLisaa();
+		}else if(target=="paivita"){
+			tutkiJaPaivita();
+		}
+	}else if(event.keyCode==113){//F2
+		document.location="listaaasiakkaat.jsp";
+	}		
+}

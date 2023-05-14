@@ -1,3 +1,4 @@
+//lomaketiedot JSON-stringiksi
 function serialize_form(form){
 	return JSON.stringify(
 	    Array.from(new FormData(form).entries())
@@ -5,6 +6,7 @@ function serialize_form(form){
 	        );	
 } 
 
+//arvo urlista
 function requestURLParam(sParam){
     let sPageURL = window.location.search.substring(1);
     let sURLVariables = sPageURL.split("&");
@@ -16,6 +18,7 @@ function requestURLParam(sParam){
     }
 }
 
+//asiakkaiden hakeminen
 function haeAsiakkaat(){
 	let url = "asiakkaat?hakusana=" + document.getElementById("hakusana").value; 
 	let requestOptions = {
@@ -44,18 +47,21 @@ function printItems(respObjList){
 	document.getElementById("tbody").innerHTML = htmlStr;	
 }
 
+//Tutkitaan tiedot ennen lähettämistä backendiin
 function tutkiJaLisaa(){
 	if(tutkiTiedot()){
 		lisaaTiedot();
 	}
 }
 
+//Tutkitaan tiedot ennen lähettämistä backendiin
 function tutkiJaPaivita(){
 	if(tutkiTiedot()){
 		paivitaTiedot();
 	}
 }
 
+//Funktio joka tutkii tiedot
 function tutkiTiedot(){
 	let ilmo="";	
 	if(document.getElementById("etunimi").value.length<2){
@@ -65,10 +71,10 @@ function tutkiTiedot(){
 		ilmo="Sukunimi ei kelpaa!";
 		document.getElementById("sukunimi").focus();			
 	}else if(document.getElementById("puhelin").value.length<7){
-		ilmo="Puhelin ei kelpaa!";	
+		ilmo="Puhelinnumero ei kelpaa!";	
 		document.getElementById("puhelin").focus();	
 	}else if(document.getElementById("sposti").value.length<8||document.getElementById("sposti").value.indexOf(".")==-1||document.getElementById("sposti").value.indexOf("@")==-1){
-		ilmo="Sposti ei kelpaa!";	
+		ilmo="Sähköposti ei kelpaa!";	
 		document.getElementById("sposti").focus();	
 	}	
 	if(ilmo!=""){
@@ -84,6 +90,7 @@ function tutkiTiedot(){
 	}
 }
 
+//Funktio XSS-hyökkäysten estämiseksi (Cross-site scripting)
 function siivoa(teksti){
 	teksti=teksti.replace(/</g, "");//&lt;
 	teksti=teksti.replace(/>/g, "");//&gt;	
@@ -156,8 +163,8 @@ function haeAsiakas() {
    		document.getElementById("asiakas_id").value=response.asiakas_id;
    		document.getElementById("etunimi").value=response.etunimi;
    		document.getElementById("sukunimi").value=response.sukunimi;
-   		document.getElementById("sposti").value=response.sposti;
-   		document.getElementById("puhelin").value=response.puhelin;
+   		document.getElementById("puhelin").value=response.sposti;
+   		document.getElementById("sposti").value=response.puhelin;
    	}) 
    	.catch(errorText => console.error("Fetch failed: " + errorText));
 }	

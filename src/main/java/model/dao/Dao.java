@@ -20,6 +20,8 @@ public class Dao {
 		Connection con = null;
 		String path = System.getProperty("catalina.base");
 		path = path.substring(0, path.indexOf(".metadata")).replace("\\", "/"); 
+			//System.out.println(path); //Tästä näet mihin kansioon laitat tietokanta-tiedostosi
+			//path += "/webapps/"; //Tuotannossa. Laita tietokanta webapps-kansioon
 		String url = "jdbc:sqlite:" + path + db;
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -169,8 +171,8 @@ public class Dao {
         			asiakas.setAsiakas_id(rs.getInt(1));
 					asiakas.setEtunimi(rs.getString(2));
 					asiakas.setSukunimi(rs.getString(3));
-					asiakas.setSposti(rs.getString(4));
-					asiakas.setPuhelin(rs.getString(5));      			      			
+					asiakas.setPuhelin(rs.getString(4));
+					asiakas.setSposti(rs.getString(5));      			      			
 				}        		
 			}			 
 		} catch (Exception e) {
@@ -182,14 +184,14 @@ public class Dao {
 }
 	public boolean changeItem(Asiakas asiakas){
 		boolean paluuArvo=true;
-		sql="UPDATE asiakkaat SET etunimi=?, sukunimi=?, sposti=?, puhelin=? WHERE asiakas_id=?";						  
+		sql="UPDATE asiakkaat SET etunimi=?, sukunimi=?, puhelin=?, sposti=? WHERE asiakas_id=?";						  
 		try {
 			con = yhdista();
 			stmtPrep=con.prepareStatement(sql); 
 			stmtPrep.setString(1, asiakas.getEtunimi());
 			stmtPrep.setString(2, asiakas.getSukunimi());
-			stmtPrep.setString(3, asiakas.getSposti());
-			stmtPrep.setString(4, asiakas.getPuhelin());
+			stmtPrep.setString(3, asiakas.getPuhelin());
+			stmtPrep.setString(4, asiakas.getSposti());
 			stmtPrep.setInt(5, asiakas.getAsiakas_id());
 			stmtPrep.executeUpdate();	        
 		} catch (Exception e) {				
@@ -199,5 +201,47 @@ public class Dao {
 			sulje();
 		}				
 		return paluuArvo;
+	}
+	
+	public boolean removeAllItems(String pwd){
+		boolean paluuArvo=true;
+		if(!pwd.equals("Nimda")) { //"Kovakoodattu" salasana -ei ole hyvä idea!
+			return false;
+		}
+		sql="DELETE FROM Asiakkaat";						  
+		try {
+			con = yhdista();
+			stmtPrep=con.prepareStatement(sql); 			
+			stmtPrep.executeUpdate();	        
+		} catch (Exception e) {				
+			e.printStackTrace();
+			paluuArvo=false;
+		} finally {
+			sulje();
+		}				
+		return paluuArvo;
+	}
+	
+	public String findUser(String uid, String pwd) {
+		String nimi = null;
+		sql="SELECT * FROM asiakkaat WHERE sposti=? AND salasana=?";						  
+		try {
+			con = yhdista();
+			if(con!=null){ 
+				stmtPrep = con.prepareStatement(sql); 
+				stmtPrep.setString(1, uid);
+				stmtPrep.setString(2, pwd);
+        		rs = stmtPrep.executeQuery();  
+        		if(rs.isBeforeFirst()){ //jos kysely tuotti dataa, eli asiakas löytyi
+        			rs.next();
+        			nimi = rs.getString("etunimi")+ " " +rs.getString("sukunimi");     			      			
+				}        		
+			}			        
+		} catch (Exception e) {				
+			e.printStackTrace();			
+		} finally {
+			sulje();
+		}				
+		return nimi;
 	}
 }
